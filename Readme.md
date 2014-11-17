@@ -35,3 +35,14 @@ files. The search will start in the folder where the currently edited file is lo
 of the configuration files are found, the parent directory is checked next. This continues
 until the root directory of the file system. The algorithm will first look for the first format
 and afterwards for the second one. If none of them are found a default list of flags is used.
+
+
+Usage
+=====
+
+If you want to use this configuration file with your YCM plugin, copy the "ycm_extra_conf.py"
+file to your preferred location and add the following option to your ".vimrc".
+
+    let g:ycm_global_ycm_extra_conf = path_to_your_conf_here
+
+And thats it. Now you can use the listed flag formats in your projects without any hassle.
