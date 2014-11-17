@@ -52,7 +52,7 @@ cpp_source_extensions = [
 cpp_additional_flags = [
     # Tell clang that this file is a CPP file.
     "-x",
-    "cpp",
+    "c++",
 
     # Use the latest standard if possible.
     "-std=c++11"
@@ -347,10 +347,10 @@ def make_flags_final(file_name, flags, base_dir = getcwd()):
     stripped = strip_flags(flags)
     absolute = make_flags_absolute(stripped, base_dir)
 
-    #if is_cpp_file(file_name):
-        #absolute.extend(cpp_additional_flags)
-    #elif is_c_file(file_name):
-        #absolute.extend(c_additional_flags)
+    if is_cpp_file(file_name):
+        absolute.extend(cpp_additional_flags)
+    elif is_c_file(file_name):
+        absolute.extend(c_additional_flags)
 
     return create_result(absolute)
 
