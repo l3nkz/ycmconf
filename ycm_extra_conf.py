@@ -1,7 +1,7 @@
 import ycm_core
-from os import getcwd, pardir, listdir
+from os import getcwd
 from os.path import abspath, join, isabs, normpath, exists, splitext, \
-        dirname
+        dirname, basename
 
 ####
 # Global lists for the flags and file detection
@@ -81,8 +81,7 @@ cpp_additional_flags = [
 # Methods for file system interaction
 ##
 
-# Methods to search for files in a file system tree.
-def find_file_recursively(file_name, start_dir = getcwd()):
+def find_file_recursively(file_name, start_dir = getcwd(), stop_dir = None):
     """
     This method will walk trough the directory tree upwards
     starting at the given directory searching for a file with
@@ -93,6 +92,10 @@ def find_file_recursively(file_name, start_dir = getcwd()):
     :type file_name: str
     :param start_dir: The directory where the search should start.
                       If it is omitted, the cwd is used.
+    :type start_dir: str
+    :param stop_dir: The directory where the search should stop. If
+                     this is omitted, it will stop at the root directory.
+    :type stop_dir: str
     :rtype: str
     :return: The file path where the file was first found.
     """
@@ -105,10 +108,11 @@ def find_file_recursively(file_name, start_dir = getcwd()):
             return join(cur_dir, file_name)
 
         # The file was not found yet so try in the parent directory.
-        parent_dir = normpath(join(cur_dir, pardir))
+        parent_dir = basename(cur_dir)
 
-        if parent_dir == cur_dir:
-            # We are already at the base directory, so abort.
+        if parent_dir == cur_dir or parent_dir == stop_dir:
+            # We are either at the root directory or reached the stop
+            # directory.
             return None
         else:
             cur_dir = parent_dir
