@@ -34,8 +34,7 @@ c_source_extensions = [
 ##
 c_additional_flags = [
     # Tell clang that this is a C file.
-    "-x",
-    "c",
+    "-x c",
 
     # Use the latest standard if possible.
     "-std=c11"
@@ -73,8 +72,7 @@ cpp_source_extensions = [
 ##
 cpp_additional_flags = [
     # Tell clang that this file is a CPP file.
-    "-x",
-    "c++",
+    "-x c++",
 
     # Use the latest standard if possible.
     "-std=c++11"
@@ -384,11 +382,171 @@ def make_final_flags(file_name, flags, base_dir = getcwd()):
     absolute = make_absolute_flags(stripped, base_dir)
 
     if is_cpp_file(file_name):
-        absolute.extend(cpp_additional_flags)
+        final = save_add_flags(absolute, cpp_additional_flags)
     elif is_c_file(file_name):
-        absolute.extend(c_additional_flags)
+        final = save_add_flags(absolute, c_additional_flags)
+    else:
+        final = absolute
 
-    return create_result(absolute)
+    return create_result(final)
+
+
+def save_add_flags(old_flags, additional_flags):
+    """
+    Add additional compilation flags to an already existing list of
+    compilation flags in a way that no duplication is occurring and no
+    conflicting flags are added.
+
+    To simplify the already complex function I decided that the additional
+    flags should have a special format. The format is important especially
+    if a flag has an argument. Such flags must always look like the following
+    two examples:
+
+            "-x c++"        <-- The argument must always be in the same
+                                string and separated by a space from the
+                                actual flag.
+            "-std=c++11"    <-- The argument must always be in the same string
+                                and just separated by the '=' sign.
+
+    :param old_flags: The list of compilation flags which should be extended.
+    :type old_flags: list[str]
+    :param additional_flags: The list of compilation flags which should be
+                             added to the other list.
+    :type additional_flags: list[str]
+    :rtype: list[str]
+    :return: The properly merged result list.
+    """
+    extended_flags = old_flags
+
+    for af in additional_flags:
+        af = af.strip()
+        already_present = False
+        conflicting = False
+
+        for i in range(len(old_flags)):
+            of = old_flags[i].strip()
+
+            if not of.startswith("-"):
+                # The flag does not start with a "-". Hence it is an argument of
+                # the previous flag. Skip it.
+                continue
+
+            # Check if the additional flag is equal to the current old flag.
+            if af == of:
+                already_present = True
+                break
+
+
+            # Check if the current flag has an argument.
+
+            # The flag is separated using a space.
+            pos = af.find(" ")
+
+            if pos != -1:
+                # OK, the additional flag has an argument. Try to find the
+                # argument in the other flag, too.
+
+                if af[:pos] == of:
+                    # The old flag has the argument as next flag.
+                    arg = old_flags[i+1].strip()
+
+                    if af[pos:].strip() == arg:
+                        # The argument in the old flags is the same as in the
+                        # additional flag.
+                        already_present = True
+                        break
+
+                    else:
+                        # The argument is different in the old flags.
+                        conflicting = True
+                        break
+
+                elif af[:pos] == of[:pos]:
+                    # The old flag has the argument in the same string.
+
+                    if af[pos:].strip() == of[pos:].strip():
+                        # The argument is the same in the old flags as in the
+                        # additional flags.
+                        already_present = True
+                        break
+
+                    else:
+                        # The argument is different in the old flags.
+                        conflicting = True
+                        break
+
+                # Check the next old flag.
+                continue
+
+            # The flag is separated using a equal sign.
+            pos = af.find("=")
+
+            if pos != -1:
+                # OK, the additional flag has an argument. Try to find the
+                # argument in the other flag, too.
+
+                if af[:pos] == of:
+                    # The old flag has the argument as next flag.
+
+                    arg = old_flags[i+1].strip()
+
+                    # The "=" sign must be contained in the argument.
+                    if af[pos:] == arg:
+                        # The argument is the same in the old flags as in the
+                        # additional flags.
+                        already_present = True
+                        break
+                    elif af[pos+1:].strip() == arg[1:].strip():
+                        # Ignore the "=" sign and maybe space following it.
+                        # The argument is the same in the old flags as in the
+                        # additional flags.
+                        already_present = True
+                        break
+                    else:
+                        # The argument in the old flag is different.
+                        conflicting = True
+                        break
+
+                elif af[:pos+1] == of:
+                    # The old flag has the argument as next flag but already
+                    # contains the "=" sign.
+
+                    arg = old_flags[i+1].strip()
+
+                    if af[pos+1:] == arg:
+                        # The argument is the same in the old flags as in the
+                        # additional flags.
+                        already_present = True
+                        break
+                    else:
+                        # The argument in the old flag is different.
+                        conflicting = True
+                        break
+
+                elif af[:pos+1] == of[:pos+1]:
+                    # The old flag has the argument in the same string.
+
+                    # Ignore the "=" sign and compare the arguments.
+                    if af[pos+1:].strip() == of[pos+1:].strip():
+                        # The argument is the same in the old flags as in the
+                        # additional flags.
+                        already_present = True
+                        break
+
+                    else:
+                        # The argument in the old flag is different.
+                        conflicting = True
+                        break
+
+                # Check the next old flag.
+                continue
+
+        if not already_present and not conflicting:
+            # The flag is not yet present in the old list. Hence add it to the
+            # list.
+            extended_flags.append(af)
+
+    return extended_flags
 
 
 ##
