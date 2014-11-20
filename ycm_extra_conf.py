@@ -337,6 +337,7 @@ def make_absolute_flags(flags, base_dir):
 
                 break
 
+        # Check for flags which expect a path as argument.
         for f in argument_is_path:
             if flag.startswith(f):
                 path = flag[len(f):].lstrip()
