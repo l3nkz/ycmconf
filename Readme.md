@@ -1,5 +1,5 @@
-The Ultimate YCM Extra Configuration
-====================================
+The YCM Extra Configuration
+===========================
 
 As I am using [YCM](https://github.com/Valloric/YouCompleteMe "YouCompleteMe") as text
 auto completion plugin for my VIM and  I don't like to have a ".ycm_extra_conf.py" for
@@ -12,7 +12,7 @@ Therefore multiple formats to specify compiler flags are supported.
 
 
 Supported Formats
-================
+=================
 
 1. Clang Compile Commands
 -------------------------
@@ -49,4 +49,4 @@ file to your preferred location and add the following option to your ".vimrc".
 
     let g:ycm_global_ycm_extra_conf = path_to_your_conf_here
 
-And thats it. Now you can use the listed flag formats in your projects without any hassle.
+And that's it. Now you can use the listed flag formats in your projects without any hassle.
