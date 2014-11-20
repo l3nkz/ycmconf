@@ -47,17 +47,25 @@ c_additional_flags = [
 cpp_header_extensions = [
     ".h"
     ".hh",
+    ".H",
+    ".hp",
     ".hpp",
-    ".hxx"
+    ".HPP",
+    ".hxx",
+    ".h++"
 ]
 
 ##
 # CPP source extensions
 ##
 cpp_source_extensions = [
+    ".cp",
     ".cpp",
+    ".CPP",
     ".cc",
-    ".cxx"
+    ".C",
+    ".cxx",
+    ".c++"
 ]
 
 ##
