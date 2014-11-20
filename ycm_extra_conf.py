@@ -3,27 +3,35 @@ from os import getcwd, pardir, listdir
 from os.path import abspath, join, isabs, normpath, exists, splitext, \
         dirname
 
-##
-# Some global lists
-##
+####
+# Global lists for the flags and file detection
+####
 
+##
 # This is the list of default flags.
+##
 default_flags = [
     "-Wall",
     "-Wextra"
 ]
 
+##
 # C header extensions
+##
 c_header_extensions = [
     ".h"
 ]
 
+##
 # C source extensions
+##
 c_source_extensions = [
     ".c"
 ]
 
+##
 # C additional flags
+##
 c_additional_flags = [
     # Tell clang that this is a C file.
     "-x",
@@ -33,7 +41,9 @@ c_additional_flags = [
     "-std=c11"
 ]
 
+##
 # CPP header extensions
+##
 cpp_header_extensions = [
     ".h"
     ".hh",
@@ -41,14 +51,18 @@ cpp_header_extensions = [
     ".hxx"
 ]
 
+##
 # CPP source extensions
+##
 cpp_source_extensions = [
     ".cpp",
     ".cc",
     ".cxx"
 ]
 
+##
 # CPP additional flags
+##
 cpp_additional_flags = [
     # Tell clang that this file is a CPP file.
     "-x",
@@ -59,8 +73,12 @@ cpp_additional_flags = [
 ]
 
 
-##
+####
 # Helper functions
+####
+
+##
+# Methods for file system interaction
 ##
 
 # Methods to search for files in a file system tree.
@@ -112,10 +130,42 @@ def file_exists(file_name, start_dir = getcwd()):
     return find_file_recursively(file_name, start_dir) is not None
 
 
-# Methods to check whether a file is a header file.
+def make_path_absolute(path, base_dir=getcwd()):
+    """
+    Make a given path absolute using the given base directory if it is
+    not already absolute.
+
+    :param path: The path of interest.
+    :type path: str
+    :param base_dir: The directory which should be used to make the
+                     path absolute. If it is omitted the cwd is used.
+    :type base_dir: str
+    :rtype: str
+    :return: The absolute path.
+    """
+    if isabs(path):
+        return path
+    else:
+        return join(base_dir, path)
+
+
+def script_directory():
+    """
+    Returns the directory where the current script is located.
+
+    :rtype: str
+    :return: The directory where the current script is located.
+    """
+    return dirname(__file__)
+
+
+##
+# Methods to check for the different source file types
+##
+
 def is_header(file_path):
     """
-    Checks either the given file is a header file or not.
+    Checks if the given file is a header file or not.
 
     :param file_path: The path to the file of interest.
     :type file_path: str
@@ -127,7 +177,7 @@ def is_header(file_path):
 
 def is_c_header(file_path):
     """
-    Checks either the given file is a C header file or not.
+    Checks if the given file is a C header file or not.
 
     :param file_path: The path to the file of interest.
     :type file_path: str
@@ -141,7 +191,7 @@ def is_c_header(file_path):
 
 def is_cpp_header(file_path):
     """
-    Checks either the given file is a CPP header file or not.
+    Checks if the given file is a CPP header file or not.
 
     :param file_path: The path to the file of interest.
     :type file_path: str
@@ -153,10 +203,9 @@ def is_cpp_header(file_path):
     return extension in cpp_header_extensions
 
 
-# Methods to check whether a file is a source file.
 def is_source(file_path):
     """
-    Checks either the given file is a source file or not.
+    Checks if the given file is a source file or not.
 
     :param file_path: The path to the file of interest.
     :type file_path: str
@@ -168,7 +217,7 @@ def is_source(file_path):
 
 def is_c_source(file_path):
     """
-    Checks either the given file is a C source file or not.
+    Checks if the given file is a C source file or not.
 
     :param file_path: The path to the file of interest.
     :type file_path: str
@@ -182,7 +231,7 @@ def is_c_source(file_path):
 
 def is_cpp_source(file_path):
     """
-    Checks either the given file is a CPP source file or not.
+    Checks if the given file is a CPP source file or not.
 
     :param file_path: The path to the file of interest.
     :type file_path: str
@@ -218,26 +267,11 @@ def is_cpp_file(file_path):
     return is_cpp_source(file_path) or is_cpp_header(file_path)
 
 
-def make_path_absolute(path, base_dir=getcwd()):
-    """
-    Make a given path absolute using the given base directory if it is
-    not already absolute.
+##
+# Methods to manipulate the compilation flags
+##
 
-    :param path: The path of interest.
-    :type path: str
-    :param base_dir: The directory which should be used to make the
-                     path absolute. If it is omitted the cwd is used.
-    :type base_dir: str
-    :rtype: str
-    :return: The absolute path.
-    """
-    if isabs(path):
-        return path
-    else:
-        return join(base_dir, path)
-
-
-def make_flags_absolute(flags, base_dir):
+def make_absolute_flags(flags, base_dir):
     """
     Makes all paths in the given flags which are relative absolute using
     the given base directory.
@@ -317,17 +351,7 @@ def strip_flags(flags):
     return [flag.strip() for flag in flags]
 
 
-def script_directory():
-    """
-    Returns the directory where the current script is located.
-
-    :rtype: str
-    :return: The directory where the current script is located.
-    """
-    return dirname(__file__)
-
-
-def make_flags_final(file_name, flags, base_dir = getcwd()):
+def make_final_flags(file_name, flags, base_dir = getcwd()):
     """
     Finalize the given flags for the file of interest. This step
     includes stripping the flags, making them absolute to the given
@@ -345,7 +369,7 @@ def make_flags_final(file_name, flags, base_dir = getcwd()):
     :return: The finalized flags for the file in the format wanted by YCM.
     """
     stripped = strip_flags(flags)
-    absolute = make_flags_absolute(stripped, base_dir)
+    absolute = make_absolute_flags(stripped, base_dir)
 
     if is_cpp_file(file_name):
         absolute.extend(cpp_additional_flags)
@@ -354,6 +378,10 @@ def make_flags_final(file_name, flags, base_dir = getcwd()):
 
     return create_result(absolute)
 
+
+##
+# Methods to create the correct return format wanted by YCM
+##
 
 def create_result(flags, do_cache = True, **kwargs):
     """
@@ -371,10 +399,12 @@ def create_result(flags, do_cache = True, **kwargs):
     """
     ret = {"flags": flags, "do_cache": do_cache}
 
-    print(flags)
-
     return dict(ret, **kwargs)
 
+
+##
+# Methods to parse the different formats supported by this script
+##
 
 def parse_compile_commands(file_name, search_base = getcwd()):
     """
@@ -389,6 +419,7 @@ def parse_compile_commands(file_name, search_base = getcwd()):
     :type file_name: str
     :param search_base: The directory at which the search for the database
                         file should start. If it is omitted the cwd is used.
+    :type search_base: str
     :rtype: dict[str,object]
     :returns: The flags found in the database in the format wanted by YCM.
     """
@@ -411,7 +442,7 @@ def parse_compile_commands(file_name, search_base = getcwd()):
 
                 # In the database we found flags for the alternative name
                 if (compilation_info.compiler_flags_):
-                    return make_flags_final(file_name, compilation_info.compiler_flags_,
+                    return make_final_flags(file_name, compilation_info.compiler_flags_,
                             compilation_info.compiler_working_dir_)
 
     elif is_source(file_name):
@@ -419,7 +450,7 @@ def parse_compile_commands(file_name, search_base = getcwd()):
 
         # We found flags for the file in the database
         if (compilation_info.compiler_flags_):
-            return make_flags_final(file_name, compilation_info.compiler_flags_,
+            return make_final_flags(file_name, compilation_info.compiler_flags_,
                     compilation_info.compiler_working_dir_)
 
     # We either don't have a proper file ending or did not find any information in the
@@ -448,7 +479,7 @@ def parse_clang_complete(file_name, search_base = getcwd()):
     with open(config, "r") as config_file:
         flags = config_file.read().striplines()
 
-        return make_flags_final(file_name, flags, config_path)
+        return make_final_flags(file_name, flags, config_path)
 
 
 def parse_default_flags(file_name):
@@ -460,11 +491,27 @@ def parse_default_flags(file_name):
     :rtype: dict[str,object]
     :returns: The default flags in the format wanted by YCM.
     """
-    return make_flags_final(file_name, default_flags, script_directory())
+    return make_final_flags(file_name, default_flags, script_directory())
 
 
-# The entry point in the file for the YCM VIM plugin.
+####
+# Entry point for the YouCompleteMe plugin
+####
+
 def FlagsForFile(file_name, **kwargs):
+    """
+    This method is the entry point for the YCM plugin. It is called by the
+    plugin to get the all necessary compiler flags to parse a specific file
+    given as argument.
+
+    :param file_name: The path to the file for which YouCompleteMe likes to do
+                      auto completion.
+    :type file_name: str
+    :param kwargs: Additional key word arguments.
+    :type kwargs: dict[str,str]
+    :rtype: dict[str,object]
+    :return: The compilation flags for the file in the format wanted by YCM.
+    """
     # First check for a compile_commands.json file.
     search_base = dirname(file_name)
 
