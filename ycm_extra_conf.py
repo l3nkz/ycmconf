@@ -1,7 +1,7 @@
 import ycm_core
 from os import getcwd
 from os.path import abspath, join, isabs, normpath, exists, splitext, \
-        dirname, basename
+        dirname
 
 ####
 # Global lists for the flags and file detection
@@ -114,7 +114,7 @@ def find_file_recursively(file_name, start_dir = getcwd(), stop_dir = None):
             return join(cur_dir, file_name)
 
         # The file was not found yet so try in the parent directory.
-        parent_dir = basename(cur_dir)
+        parent_dir = dirname(cur_dir)
 
         if parent_dir == cur_dir or parent_dir == stop_dir:
             # We are either at the root directory or reached the stop
