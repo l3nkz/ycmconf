@@ -676,7 +676,7 @@ def parse_clang_complete(file_name, search_base = getcwd()):
     config_path = dirname(config)
 
     with open(config, "r") as config_file:
-        flags = config_file.read().striplines()
+        flags = config_file.read().splitlines()
 
         return make_final_flags(file_name, flags, config_path)
 
