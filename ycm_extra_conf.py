@@ -12,21 +12,21 @@ from os.path import abspath, join, isabs, normpath, exists, splitext, \
 ##
 default_flags = [
     "-Wall",
-    "-Wextra"
+    "-Wextra",
 ]
 
 ##
 # C header extensions
 ##
 c_header_extensions = [
-    ".h"
+    ".h",
 ]
 
 ##
 # C source extensions
 ##
 c_source_extensions = [
-    ".c"
+    ".c",
 ]
 
 ##
@@ -34,25 +34,25 @@ c_source_extensions = [
 ##
 c_additional_flags = [
     # Tell clang that this is a C file.
-    "-x"
+    "-x",
     "c",
 
     # Use the latest standard if possible.
-    "-std=c11"
+    "-std=c11",
 ]
 
 ##
 # CPP header extensions
 ##
 cpp_header_extensions = [
-    ".h"
+    ".h",
     ".hh",
     ".H",
     ".hp",
     ".hpp",
     ".HPP",
     ".hxx",
-    ".h++"
+    ".h++",
 ]
 
 ##
@@ -65,7 +65,7 @@ cpp_source_extensions = [
     ".cc",
     ".C",
     ".cxx",
-    ".c++"
+    ".c++",
 ]
 
 ##
@@ -77,7 +77,7 @@ cpp_additional_flags = [
     "c++",
 
     # Use the latest standard if possible.
-    "-std=c++11"
+    "-std=c++11",
 ]
 
 
