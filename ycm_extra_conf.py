@@ -633,7 +633,7 @@ def parse_compile_commands(file_name, search_base = getcwd()):
         (name,_) = splitext(file_name)
 
         # Try out all C and CPP extensions for the corresponding source file.
-        for ext in list(c_source_extensions, cpp_source_extensions):
+        for ext in (c_source_extensions + cpp_source_extensions):
             alternative_name = name + ext
 
             if exists(alternative_name):
