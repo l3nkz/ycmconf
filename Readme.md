@@ -44,9 +44,24 @@ order they are listed above. If none of them are found, a default list of flags 
 Usage
 =====
 
+Manual Installation
+-------------------
+
 If you want to use this configuration file with your YCM plugin, copy the "ycm_extra_conf.py"
 file to your preferred location and add the following option to your ".vimrc".
 
+```vimrc
     let g:ycm_global_ycm_extra_conf = path_to_your_conf_here
+```
 
 And that's it. Now you can use the listed flag formats in your projects without any hassle.
+
+Automatic Installation
+----------------------
+
+Alternatively you can simply add the following line to your vimrc file if you are using like me
+Vundle and let the plugin arrange everything.
+
+```vimrc
+    Plugin 'l3nkz/ycmconf'
+```
